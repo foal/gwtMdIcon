@@ -12,68 +12,67 @@ import com.google.common.collect.ImmutableList;
 
 public interface IconEnumPrototype {
 
-	List<IconEnumPrototype> VALUES = new ArrayList<>();
+	List<IconEnumPrototype> VALUES = ImmutableList.<IconEnumPrototype>builder()
+			.add(IconEnumPrototype1.values())
+			.add(IconEnumPrototype2.values())
+			.build();
 
 	enum IconEnumPrototype1 implements IconEnumPrototype {
 
 		ICON1(MdiIcon.create(""), "id", "codepoint", ImmutableList.of("aliases"), ImmutableList.of("tags"), "author", "version");
 
-		static {
-			VALUES.addAll(Arrays.asList(values()));
-		}
-
-	private final MdiIcon icon;
-	private final String id;
-	private final String codepoint;
-	private final List<String> aliases;
-	private final List<String> tags;
-	private final String author;
-	private final String version;
+		private final MdiIcon icon;
+		private final String id;
+		private final String codepoint;
+		private final List<String> aliases;
+		private final List<String> tags;
+		private final String author;
+		private final String version;
 
 		private IconEnumPrototype1(MdiIcon icon, String id, String codepoint, @Nonnull List<String> aliases, @Nonnull List<String> tags, String author, String version) {
-		this.icon = icon;
-		this.id = id;
-		this.codepoint = codepoint;
-		this.aliases = ImmutableList.copyOf(aliases);
-		this.tags = ImmutableList.copyOf(tags);
-		this.author = author;
-		this.version = version;
-	}
+			this.icon = icon;
+			this.id = id;
+			this.codepoint = codepoint;
+			this.aliases = ImmutableList.copyOf(aliases);
+			this.tags = ImmutableList.copyOf(tags);
+			this.author = author;
+			this.version = version;
+		}
 
 		@Override
-	public MdiIcon getIcon() {
-		return icon;
-	}
+		public MdiIcon getIcon() {
+			return icon;
+		}
 
 		@Override
-	public String getId() {
-		return id;
-	}
+		public String getId() {
+			return id;
+		}
 
 		@Override
-	public String getCodepoint() {
-		return codepoint;
-	}
+		public String getCodepoint() {
+			return codepoint;
+		}
 
 		@Override
-	public List<String> getAliases() {
-		return aliases;
-	}
+		public List<String> getAliases() {
+			return aliases;
+		}
 
 		@Override
-	public List<String> getTags() {
-		return tags;
-	}
+		public List<String> getTags() {
+			return tags;
+		}
 
 		@Override
-	public String getAuthor() {
-		return author;
-	}
+		public String getAuthor() {
+			return author;
+		}
 
 		@Override
-	public String getVersion() {
-		return version;
-	}
+		public String getVersion() {
+			return version;
+		}
 
 	}
 
