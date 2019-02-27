@@ -1,10 +1,8 @@
 package org.jresearch.commons.gwt.mdIcon;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Modifier;
@@ -13,25 +11,26 @@ import com.google.common.collect.ImmutableList;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeSpec.Builder;
 
 @SuppressWarnings("nls")
 public class IconEnumBuilder extends BaseIconBuilder {
-	// ICON(MdiIcon.create("name"), "id", "codepoint", ImmutableList.of("aliases"),
-	// ImmutableList.of("tags"), "author", "version");
-	private static final String ENUM_PARAMS = "$T.create($S), $S, $S, $T.of($L), $T.of($L), $S, $S";
+	/**
+	 * <pre>
+	 * ICON(MdiIcon.create("name"), "id", "codepoint", ImmutableList.of("aliases"), ImmutableList.of("tags"), "author", "version");
+	 * </pre>
+	 */
+	private static final String ENUM_PARAMS = "$T.create(\"mdi-$L\"), $S, $S, $T.of($L), $T.of($L), $S, $S";
 	private static final Collector<CharSequence, ?, String> VAR_JOINER = Collectors.joining("\", \"", "\"", "\"");
 
 	private final Builder poetBuilder;
-	private final ClassName enumName;
-	private final FieldSpec allTags;
 
 	private IconEnumBuilder(ClassName enumName, ClassName iconInterface) {
-		this.enumName = enumName;
-		allTags = FieldSpec.builder(LIST_OF_STRING, "ALL_TAGS", Modifier.PRIVATE, Modifier.STATIC).build();
-		poetBuilder = TypeSpec.enumBuilder(enumName).addSuperinterface(iconInterface).addModifiers(Modifier.PUBLIC, Modifier.STATIC);
+		poetBuilder = TypeSpec
+				.enumBuilder(enumName)
+				.addSuperinterface(iconInterface)
+				.addModifiers(Modifier.PUBLIC, Modifier.STATIC);
 	}
 
 	public static IconEnumBuilder create(CharSequence packageName, CharSequence baseName, char groupChar) {
@@ -76,7 +75,6 @@ public class IconEnumBuilder extends BaseIconBuilder {
 
 	public TypeSpec build() {
 		poetBuilder
-				.addField(allTags)
 				.addField(getIcon())
 				.addField(getId())
 				.addField(getCodepoint())
@@ -85,41 +83,9 @@ public class IconEnumBuilder extends BaseIconBuilder {
 				.addField(getAuthor())
 				.addField(getVersion())
 				.addMethod(constructor());
-		addCommonMethods(poetBuilder)
-				.addMethod(tags())
-				.addMethod(byAlias())
-				.addMethod(byTag());
+		addCommonMethods(poetBuilder);
 
 		return poetBuilder.build();
-	}
-
-	private MethodSpec tags() {
-		return MethodSpec.methodBuilder("tags")
-				.addModifiers(Modifier.PUBLIC, Modifier.STATIC)
-				.returns(LIST_OF_STRING)
-				.beginControlFlow("if ($N == null)", allTags)
-				.addStatement("$N = $T.of(values()).map($T::getTags).flatMap($T::stream).distinct().collect($T.toList())", allTags, Stream.class, enumName, List.class, Collectors.class)
-				.endControlFlow()
-				.addStatement("return $N", allTags)
-				.build();
-	}
-
-	private MethodSpec byAlias() {
-		return MethodSpec.methodBuilder("byAlias")
-				.addModifiers(Modifier.PUBLIC, Modifier.STATIC)
-				.addParameter(String.class, "alias")
-				.returns(ParameterizedTypeName.get(ClassName.get(Optional.class), enumName))
-				.addStatement("return $T.of(values()).filter(i -> i.getAliases().contains(alias)).findAny()", Stream.class)
-				.build();
-	}
-
-	private MethodSpec byTag() {
-		return MethodSpec.methodBuilder("byTag")
-				.addModifiers(Modifier.PUBLIC, Modifier.STATIC)
-				.addParameter(String.class, "tag")
-				.returns(ParameterizedTypeName.get(ClassName.get(List.class), enumName))
-				.addStatement("return $T.of(values()).filter(i -> i.getTags().contains(tag)).collect($T.toList())", Stream.class, Collectors.class)
-				.build();
 	}
 
 	private MethodSpec constructor() {

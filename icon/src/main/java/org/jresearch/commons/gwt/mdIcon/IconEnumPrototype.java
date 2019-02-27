@@ -1,8 +1,5 @@
 package org.jresearch.commons.gwt.mdIcon;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -153,27 +150,15 @@ public interface IconEnumPrototype {
 
 	String getVersion();
 
-	public static List<IconEnumPrototype> values() {
-		if (VALUES.isEmpty()) {
-			VALUES.addAll(EnumSet.allOf(IconEnumPrototype1.class));
-			VALUES.addAll(EnumSet.allOf(IconEnumPrototype2.class));
-		}
-		return VALUES;
-	}
-
 	public static List<String> tags() {
-		return values().stream()
-				.map(IconEnumPrototype::getTags)
-				.flatMap(List::stream)
-				.distinct()
-				.collect(Collectors.toList());
+		return VALUES.stream().map(IconEnumPrototype::getTags).flatMap(List::stream).distinct().collect(Collectors.toList());
 	}
 
 	public static Optional<IconEnumPrototype> byAlias(String alias) {
-		return values().stream().filter(i -> i.getAliases().contains(alias)).findAny();
+		return VALUES.stream().filter(i -> i.getAliases().contains(alias)).findAny();
 	}
 
 	public static List<IconEnumPrototype> byTag(String tag) {
-		return values().stream().filter(i -> i.getTags().contains(tag)).collect(Collectors.toList());
+		return VALUES.stream().filter(i -> i.getTags().contains(tag)).collect(Collectors.toList());
 	}
 }
