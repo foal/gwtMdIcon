@@ -14,51 +14,30 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
-import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeSpec.Builder;
 
 @SuppressWarnings("nls")
-public class IconEnumBuilder {
+public class IconEnumBuilder extends BaseIconBuilder {
 	// ICON(MdiIcon.create("name"), "id", "codepoint", ImmutableList.of("aliases"),
 	// ImmutableList.of("tags"), "author", "version");
 	private static final String ENUM_PARAMS = "$T.create($S), $S, $S, $T.of($L), $T.of($L), $S, $S";
 	private static final Collector<CharSequence, ?, String> VAR_JOINER = Collectors.joining("\", \"", "\"", "\"");
 
 	private final Builder poetBuilder;
-	private final ClassName mdiIcon;
-	private final FieldSpec icon;
-	private final FieldSpec id;
-	private final FieldSpec codepoint;
-	private final FieldSpec aliases;
-	private final FieldSpec tags;
-	private final FieldSpec author;
-	private final FieldSpec version;
-	private final FieldSpec allTags;
-	private final ParameterizedTypeName listOfString;
 	private final ClassName enumName;
-	private final List<Class<?>> staticImports;
+	private final FieldSpec allTags;
 
-	private IconEnumBuilder(ClassName enumName) {
+	private IconEnumBuilder(ClassName enumName, ClassName iconInterface) {
 		this.enumName = enumName;
-		poetBuilder = TypeSpec.enumBuilder(enumName).addModifiers(Modifier.PUBLIC);
-		listOfString = ParameterizedTypeName.get(List.class, String.class);
-		mdiIcon = ClassName.get("org.dominokit.domino.ui.icons", "MdiIcon");
-		allTags = FieldSpec.builder(listOfString, "ALL_TAGS", Modifier.PRIVATE, Modifier.STATIC).build();
-		icon = FieldSpec.builder(mdiIcon, "icon", Modifier.PRIVATE, Modifier.FINAL).build();
-		id = FieldSpec.builder(String.class, "id", Modifier.PRIVATE, Modifier.FINAL).build();
-		codepoint = FieldSpec.builder(String.class, "codepoint", Modifier.PRIVATE, Modifier.FINAL).build();
-		aliases = FieldSpec.builder(listOfString, "aliases", Modifier.PRIVATE, Modifier.FINAL).build();
-		tags = FieldSpec.builder(listOfString, "tags", Modifier.PRIVATE, Modifier.FINAL).build();
-		author = FieldSpec.builder(String.class, "author", Modifier.PRIVATE, Modifier.FINAL).build();
-		version = FieldSpec.builder(String.class, "version", Modifier.PRIVATE, Modifier.FINAL).build();
-
-		// static imports
-		staticImports = ImmutableList.of(ImmutableList.class);
+		allTags = FieldSpec.builder(LIST_OF_STRING, "ALL_TAGS", Modifier.PRIVATE, Modifier.STATIC).build();
+		poetBuilder = TypeSpec.enumBuilder(enumName).addSuperinterface(iconInterface).addModifiers(Modifier.PUBLIC, Modifier.STATIC);
 	}
 
-	public static IconEnumBuilder create(CharSequence packageName, CharSequence simpleName) {
-		return new IconEnumBuilder(ClassName.get(packageName.toString(), simpleName.toString()));
+	public static IconEnumBuilder create(CharSequence packageName, CharSequence baseName, char groupChar) {
+		ClassName iconInterfaceName = ClassName.get(packageName.toString(), baseName.toString());
+		ClassName enumClassName = ClassName.get(packageName.toString(), baseName.toString(), String.valueOf(groupChar));
+		return new IconEnumBuilder(enumClassName, iconInterfaceName);
 	}
 
 	public IconEnumBuilder addEnumConstant(MetaIconInfo info) {
@@ -87,8 +66,8 @@ public class IconEnumBuilder {
 		return Character.isJavaIdentifierStart(firstNameCharacter) ? String.valueOf(firstNameCharacter) : "_" + toJavaCharacter(firstNameCharacter);
 	}
 
-	private TypeSpec generateParameters(MetaIconInfo info) {
-		return TypeSpec.anonymousClassBuilder(ENUM_PARAMS, mdiIcon, info.name(), info.id(), info.codepoint(), ImmutableList.class, var(info.aliases()), ImmutableList.class, var(info.tags()), info.author(), info.version()).build();
+	private static TypeSpec generateParameters(MetaIconInfo info) {
+		return TypeSpec.anonymousClassBuilder(ENUM_PARAMS, MDI_ICON, info.name(), info.id(), info.codepoint(), ImmutableList.class, var(info.aliases()), ImmutableList.class, var(info.tags()), info.author(), info.version()).build();
 	}
 
 	private static String var(List<String> args) {
@@ -96,35 +75,28 @@ public class IconEnumBuilder {
 	}
 
 	public TypeSpec build() {
-		return poetBuilder
+		poetBuilder
 				.addField(allTags)
-				.addField(icon)
-				.addField(id)
-				.addField(codepoint)
-				.addField(aliases)
-				.addField(tags)
-				.addField(author)
-				.addField(version)
-				.addMethod(constructor())
-				.addMethod(getter(icon))
-				.addMethod(getter(id))
-				.addMethod(getter(codepoint))
-				.addMethod(getter(aliases))
-				.addMethod(getter(tags))
-				.addMethod(getter(author))
-				.addMethod(getter(version))
-
+				.addField(getIcon())
+				.addField(getId())
+				.addField(getCodepoint())
+				.addField(getAliases())
+				.addField(getTags())
+				.addField(getAuthor())
+				.addField(getVersion())
+				.addMethod(constructor());
+		addCommonMethods(poetBuilder)
 				.addMethod(tags())
 				.addMethod(byAlias())
-				.addMethod(byTag())
+				.addMethod(byTag());
 
-				.build();
+		return poetBuilder.build();
 	}
 
 	private MethodSpec tags() {
 		return MethodSpec.methodBuilder("tags")
 				.addModifiers(Modifier.PUBLIC, Modifier.STATIC)
-				.returns(listOfString)
+				.returns(LIST_OF_STRING)
 				.beginControlFlow("if ($N == null)", allTags)
 				.addStatement("$N = $T.of(values()).map($T::getTags).flatMap($T::stream).distinct().collect($T.toList())", allTags, Stream.class, enumName, List.class, Collectors.class)
 				.endControlFlow()
@@ -152,13 +124,13 @@ public class IconEnumBuilder {
 
 	private MethodSpec constructor() {
 		com.squareup.javapoet.MethodSpec.Builder result = MethodSpec.constructorBuilder().addModifiers(Modifier.PRIVATE);
-		addField(result, icon);
-		addField(result, id);
-		addField(result, codepoint);
-		addField(result, aliases);
-		addField(result, tags);
-		addField(result, author);
-		addField(result, version);
+		addField(result, getIcon());
+		addField(result, getId());
+		addField(result, getCodepoint());
+		addField(result, getAliases());
+		addField(result, getTags());
+		addField(result, getAuthor());
+		addField(result, getVersion());
 		return result.build();
 	}
 
@@ -168,24 +140,9 @@ public class IconEnumBuilder {
 				.addStatement("this.$N = $N", field.name, field.name);
 	}
 
-	private static MethodSpec getter(FieldSpec field) {
-		return MethodSpec.methodBuilder(getterName(field))
-				.returns(field.type)
-				.addStatement("return $N", field)
-				.build();
-	}
-
-	private static String getterName(FieldSpec field) {
-		boolean bool = TypeName.BOOLEAN.equals(field.type);
-		return (bool ? "is" : "get") + cap(field.name);
-	}
-
-	private static String cap(String name) {
-		return name.substring(0, 1).toUpperCase() + name.substring(1);
-	}
-
-	public List<Class<?>> getStaticImports() {
-		return staticImports;
+	@Override
+	protected com.squareup.javapoet.MethodSpec.Builder getter(FieldSpec field) {
+		return super.getter(field).addStatement("return $N", field).addAnnotation(Override.class);
 	}
 
 }

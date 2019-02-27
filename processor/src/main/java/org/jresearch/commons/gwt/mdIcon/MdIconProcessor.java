@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.Writer;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Processor;
@@ -32,6 +33,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.JavaFile.Builder;
+import com.squareup.javapoet.TypeSpec;
 
 import one.util.streamex.StreamEx;
 
@@ -63,19 +65,43 @@ public class MdIconProcessor extends AbstractProcessor {
 				.findAny()
 				.map(PackageElement.class::cast)
 				.map(PackageElement::getQualifiedName)
-				.ifPresent(this::generateIconEnumeration);
+				.ifPresent(this::generateIconEnumerations);
 		return true;
 	}
 
-	private void generateIconEnumeration(Name packageName) {
-		List<MetaIconInfo> infos = loadIconMetaInfo();
-		IconEnumBuilder enumBuilder = IconEnumBuilder.create(packageName, CLASS_NAME);
+	private void generateIconEnumerations(Name packageName) {
+		// To generate set of enumeration grouped by first letter (one is too big for
+		// Java)
+		StreamEx.of(loadIconMetaInfo())
+				.mapToEntry(MdIconProcessor::alfabetClassifier, Function.identity())
+				.collapseKeys()
+				.forKeyValue((k, v) -> generateIconEnumeration(v, packageName, k));
+
+		StreamEx.of(loadIconMetaInfo())
+				.mapToEntry(MdIconProcessor::alfabetClassifier, Function.identity())
+				.collapseKeys()
+				.mapKeyValue((k, v) -> generateIconEnumeration(v, packageName, k))
+				.toListAndThen(l -> generateIconInterface(l, packageName));
+	}
+
+	private static char alfabetClassifier(MetaIconInfo info) {
+		char firstChar = info.name().charAt(0);
+		return Character.isJavaIdentifierStart(firstChar) ? Character.toUpperCase(firstChar) : '_';
+	}
+
+	private static TypeSpec generateIconEnumeration(List<MetaIconInfo> infos, Name packageName, char groupLetter) {
+		IconEnumBuilder enumBuilder = IconEnumBuilder.create(packageName, CLASS_NAME, groupLetter);
 		infos.forEach(enumBuilder::addEnumConstant);
+		return enumBuilder.build();
+	}
+
+	private Void generateIconInterface(List<TypeSpec> enums, Name packageName) {
+		IconIntefaceBuilder builder = IconIntefaceBuilder.create(packageName, CLASS_NAME, enums);
 		Builder javaFileBuilder = JavaFile
-				.builder(packageName.toString(), enumBuilder.build())
+				.builder(packageName.toString(), builder.build())
 				.indent("\t")
 				.skipJavaLangImports(true);
-		enumBuilder.getStaticImports().forEach(c -> javaFileBuilder.addStaticImport(c, "*"));
+		builder.getStaticImports().forEach(c -> javaFileBuilder.addStaticImport(c, "*"));
 		JavaFile javaFile = javaFileBuilder
 				.build();
 
@@ -87,7 +113,7 @@ public class MdIconProcessor extends AbstractProcessor {
 		} catch (IOException e) {
 			LOGGER.error("Can't generate icon enumeration", e);
 		}
-
+		return null;
 	}
 
 	private List<MetaIconInfo> loadIconMetaInfo() {
