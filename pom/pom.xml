@@ -11,11 +11,11 @@
 	<packaging>pom</packaging>
 	<name>JRESEARCH-COMMONS: GWT mdIcon POM</name>
 	<description>JRS GWT https://materialdesignicons.com port</description>
-	<url>https://bitbucket.org/foal/gwtMdIcon</url>
+	<url>https://bitbucket.org/hortonolite/gwtMdIcon</url>
 	<scm>
-		<connection>scm:hg:https://foal@bitbucket.org/foal/gwtMdIcon</connection>
-		<developerConnection>scm:hg:ssh://hg@bitbucket.org/foal/gwtMdIcon</developerConnection>
-		<url>https://bitbucket.org/foal/gwtMdIcon</url>
+		<connection>scm:hg:https://foal@bitbucket.org/hortonolite/gwtmdicon</connection>
+		<developerConnection>scm:hg:ssh://hg@bitbucket.org/hortonolite/gwtMdIcon</developerConnection>
+		<url>https://bitbucket.org/hortonolite/gwtMdIcon</url>
 		<tag>HEAD</tag>
 	</scm>
 	<modules>
