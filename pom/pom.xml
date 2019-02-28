@@ -22,4 +22,26 @@
 		<module>../icon</module>
 		<module>../processor</module>
 	</modules>
+	<properties>
+		<domino.version>1.0.34-SNAPSHOT</domino.version>
+	</properties>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.jresearch.dominokit</groupId>
+				<artifactId>domino-ui</artifactId>
+				<version>${domino.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jresearch.commons.gwt.mdIcon</groupId>
+				<artifactId>org.jresearch.commons.gwt.mdIcon.processor</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jresearch.commons.gwt.mdIcon</groupId>
+				<artifactId>org.jresearch.commons.gwt.mdIcon.icon</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 </project>

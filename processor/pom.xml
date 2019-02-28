@@ -20,7 +20,6 @@
 		<dependency>
 			<groupId>com.google.errorprone</groupId>
 			<artifactId>error_prone_annotations</artifactId>
-			<version>2.2.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -42,18 +41,15 @@
 		<dependency>
 			<groupId>com.squareup</groupId>
 			<artifactId>javapoet</artifactId>
-			<version>1.11.1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.auto.service</groupId>
 			<artifactId>auto-service</artifactId>
-			<version>1.0-rc4</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.immutables</groupId>
 			<artifactId>value-annotations</artifactId>
-			<version>2.7.5</version>
 		</dependency>
 		<dependency>
 			<groupId>one.util</groupId>
@@ -64,7 +60,7 @@
 		</dependency>
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-core</artifactId>
+			<artifactId>logback-classic</artifactId>
 			<scope>runtime</scope>
 		</dependency>
 	</dependencies>
@@ -78,12 +74,12 @@
 						<path>
 							<groupId>com.google.auto.service</groupId>
 							<artifactId>auto-service</artifactId>
-							<version>1.0-rc4</version>
+							<version>${auto-service.ver}</version>
 						</path>
 						<path>
 							<groupId>org.immutables</groupId>
 							<artifactId>value</artifactId>
-							<version>2.7.5</version>
+							<version>${immutables.ver}</version>
 						</path>
 					</annotationProcessorPaths>
 				</configuration>

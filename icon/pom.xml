@@ -8,23 +8,15 @@
 	</parent>
 	<artifactId>org.jresearch.commons.gwt.mdIcon.icon</artifactId>
 	<name>JRS GWT https://materialdesignicons.com content</name>
-	<properties>
-		<!-- Used by the project -->
-		<gwtBase.version>1.0.198-SNAPSHOT</gwtBase.version>
-		<domino.version>1.0.34-SNAPSHOT</domino.version>
-		<gwtCldr.version>1.0.6-SNAPSHOT</gwtCldr.version>
-		<gwtTimer.version>1.4.2-SNAPSHOT</gwtTimer.version>
-	</properties>
+	<packaging>gwt-lib</packaging>
 	<dependencies>
 		<dependency>
 			<groupId>org.jresearch.dominokit</groupId>
 			<artifactId>domino-ui</artifactId>
-			<version>${domino.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jresearch.commons.gwt.mdIcon</groupId>
 			<artifactId>org.jresearch.commons.gwt.mdIcon.processor</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -46,19 +38,19 @@
 						<path>
 							<groupId>org.jresearch.commons.gwt.mdIcon</groupId>
 							<artifactId>org.jresearch.commons.gwt.mdIcon.processor</artifactId>
-							<version>1.0.0-SNAPSHOT</version>
+							<version>${project.version}}</version>
 						</path>
 					</annotationProcessorPaths>
 				</configuration>
 			</plugin>
-			<!-- <plugin>
+			<plugin>
 				<groupId>net.ltgt.gwt.maven</groupId>
 				<artifactId>gwt-maven-plugin</artifactId>
 				<configuration>
 					<moduleName>org.jresearch.commons.gwt.mdIcon</moduleName>
 					<moduleShortName>icon</moduleShortName>
 				</configuration>
-			</plugin> -->
+			</plugin>
 		</plugins>
 	</build>
 </project>

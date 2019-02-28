@@ -127,8 +127,9 @@ public class MdIconProcessor extends AbstractProcessor {
 						.readValue(meta, infoList);
 			}
 		} catch (IOException e) {
-			LOGGER.error("Can't load icon meta info", e);
+			LOGGER.error("Can't load icon meta info.", e);
 			return ImmutableList.of();
 		}
 	}
+
 }
