@@ -7,8 +7,7 @@
 		<relativePath>../pom/pom.xml</relativePath>
 	</parent>
 	<artifactId>org.jresearch.commons.gwt.mdIcon.icon</artifactId>
-	<name>JRS GWT https://materialdesignicons.com content</name>
-	<packaging>gwt-lib</packaging>
+	<name>JRESEARCH-COMMONS: GWT mdIcon example/test project</name>
 	<dependencies>
 		<dependency>
 			<groupId>org.jresearch.dominokit</groupId>
@@ -41,14 +40,6 @@
 							<version>${project.version}}</version>
 						</path>
 					</annotationProcessorPaths>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>net.ltgt.gwt.maven</groupId>
-				<artifactId>gwt-maven-plugin</artifactId>
-				<configuration>
-					<moduleName>org.jresearch.commons.gwt.mdIcon</moduleName>
-					<moduleShortName>icon</moduleShortName>
 				</configuration>
 			</plugin>
 		</plugins>
