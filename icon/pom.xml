@@ -37,7 +37,7 @@
 						<path>
 							<groupId>org.jresearch.commons.gwt.mdIcon</groupId>
 							<artifactId>org.jresearch.commons.gwt.mdIcon.processor</artifactId>
-							<version>${project.version}}</version>
+							<version>${project.version}</version>
 						</path>
 					</annotationProcessorPaths>
 				</configuration>
