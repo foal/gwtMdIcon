@@ -17,3 +17,12 @@ This is a Java annotation processor to generate Domino UI MdiIcons (https://domi
 
 The MdIcons interface will be created in the annotated package. The interface contains all icons from meta.json separated by alfabet (due to Java limitation on class initialization size)
 
+You can check the gwtMdIcon/icon project as example. 
+
+### How to get sources ###
+
+Main repository (hg): https://bitbucket.org/hortonolite/gwtmdicon
+
+Mirror on GitHub (git): https://github.com/foal/gwtMdIcon
+
+
