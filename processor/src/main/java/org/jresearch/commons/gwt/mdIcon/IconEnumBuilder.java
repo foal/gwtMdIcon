@@ -21,7 +21,7 @@ public class IconEnumBuilder extends BaseIconBuilder {
 	 * ICON(MdiIcon.create("name"), "id", "codepoint", ImmutableList.of("aliases"), ImmutableList.of("tags"), "author", "version");
 	 * </pre>
 	 */
-	private static final String ENUM_PARAMS = "$T.create(\"mdi-$L\"), $S, $S, $T.of($L), $T.of($L), $S, $S";
+	private static final String ENUM_PARAMS = "\"mdi-$L\", $S, $S, $T.of($L), $T.of($L), $S, $S";
 	private static final Collector<CharSequence, ?, String> VAR_JOINER = Collectors.joining("\", \"", "\"", "\"");
 
 	private final Builder poetBuilder;
@@ -66,7 +66,7 @@ public class IconEnumBuilder extends BaseIconBuilder {
 	}
 
 	private static TypeSpec generateParameters(MetaIconInfo info) {
-		return TypeSpec.anonymousClassBuilder(ENUM_PARAMS, MDI_ICON, info.name(), info.id(), info.codepoint(), ImmutableList.class, var(info.aliases()), ImmutableList.class, var(info.tags()), info.author(), info.version()).build();
+		return TypeSpec.anonymousClassBuilder(ENUM_PARAMS, info.name(), info.id(), info.codepoint(), ImmutableList.class, var(info.aliases()), ImmutableList.class, var(info.tags()), info.author(), info.version()).build();
 	}
 
 	private static String var(List<String> args) {
@@ -109,6 +109,11 @@ public class IconEnumBuilder extends BaseIconBuilder {
 	@Override
 	protected com.squareup.javapoet.MethodSpec.Builder getter(FieldSpec field) {
 		return super.getter(field).addStatement("return $N", field).addAnnotation(Override.class);
+	}
+
+	@Override
+	protected com.squareup.javapoet.MethodSpec.Builder createIcon() {
+		return super.createIcon().addStatement("return $T.create(iconName)", MDI_ICON).addAnnotation(Override.class);
 	}
 
 }

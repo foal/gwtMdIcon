@@ -28,7 +28,7 @@ public abstract class BaseIconBuilder {
 	private final List<Class<?>> staticImports;
 
 	protected BaseIconBuilder() {
-		icon = FieldSpec.builder(MDI_ICON, "icon", Modifier.PRIVATE, Modifier.FINAL).build();
+		icon = FieldSpec.builder(String.class, "iconName", Modifier.PRIVATE, Modifier.FINAL).build();
 		id = FieldSpec.builder(String.class, "id", Modifier.PRIVATE, Modifier.FINAL).build();
 		codepoint = FieldSpec.builder(String.class, "codepoint", Modifier.PRIVATE, Modifier.FINAL).build();
 		aliases = FieldSpec.builder(LIST_OF_STRING, "aliases", Modifier.PRIVATE, Modifier.FINAL).build();
@@ -41,6 +41,7 @@ public abstract class BaseIconBuilder {
 
 	protected Builder addCommonMethods(Builder typeBuilder) {
 		return typeBuilder
+				.addMethod(createIcon().build())
 				.addMethod(getter(icon).build())
 				.addMethod(getter(id).build())
 				.addMethod(getter(codepoint).build())
@@ -50,6 +51,14 @@ public abstract class BaseIconBuilder {
 				.addMethod(getter(version).build());
 	}
 
+	@SuppressWarnings("static-method")
+	protected com.squareup.javapoet.MethodSpec.Builder createIcon() {
+		return MethodSpec.methodBuilder("icon")
+				.addModifiers(Modifier.PUBLIC)
+				.returns(MDI_ICON);
+	}
+
+	@SuppressWarnings("static-method")
 	protected com.squareup.javapoet.MethodSpec.Builder getter(FieldSpec field) {
 		return MethodSpec.methodBuilder(getterName(field))
 				.addModifiers(Modifier.PUBLIC)
