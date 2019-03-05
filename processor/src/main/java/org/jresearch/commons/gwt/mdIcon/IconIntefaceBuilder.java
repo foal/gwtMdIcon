@@ -89,4 +89,9 @@ public class IconIntefaceBuilder extends BaseIconBuilder {
 		return super.getter(field).addModifiers(Modifier.ABSTRACT);
 	}
 
+	@Override
+	protected com.squareup.javapoet.MethodSpec.Builder createIcon() {
+		return super.createIcon().addModifiers(Modifier.ABSTRACT);
+	}
+
 }
