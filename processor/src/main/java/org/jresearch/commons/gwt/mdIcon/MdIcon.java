@@ -10,5 +10,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.PACKAGE)
 @Documented
 public @interface MdIcon {
-	// Just a flag annotation
+	Mode value() default Mode.FULL_CLIENT;
 }

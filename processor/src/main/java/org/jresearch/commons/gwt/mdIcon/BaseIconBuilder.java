@@ -2,6 +2,7 @@ package org.jresearch.commons.gwt.mdIcon;
 
 import java.util.List;
 
+import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Modifier;
 
 import com.google.common.collect.ImmutableList;
@@ -39,7 +40,7 @@ public abstract class BaseIconBuilder {
 		staticImports = ImmutableList.of(ImmutableList.class);
 	}
 
-	protected Builder addCommonMethods(Builder typeBuilder) {
+	protected Builder addCommonMethods(final Builder typeBuilder) {
 		return typeBuilder
 				.addMethod(createIcon().build())
 				.addMethod(getter(icon).build())
@@ -59,18 +60,18 @@ public abstract class BaseIconBuilder {
 	}
 
 	@SuppressWarnings("static-method")
-	protected com.squareup.javapoet.MethodSpec.Builder getter(FieldSpec field) {
+	protected com.squareup.javapoet.MethodSpec.Builder getter(final FieldSpec field) {
 		return MethodSpec.methodBuilder(getterName(field))
 				.addModifiers(Modifier.PUBLIC)
 				.returns(field.type);
 	}
 
-	private static String getterName(FieldSpec field) {
-		boolean bool = TypeName.BOOLEAN.equals(field.type);
+	private static String getterName(final FieldSpec field) {
+		final boolean bool = TypeName.BOOLEAN.equals(field.type);
 		return (bool ? "is" : "get") + cap(field.name);
 	}
 
-	private static String cap(String name) {
+	private static String cap(final String name) {
 		return name.substring(0, 1).toUpperCase() + name.substring(1);
 	}
 
@@ -104,6 +105,27 @@ public abstract class BaseIconBuilder {
 
 	public FieldSpec getVersion() {
 		return version;
+	}
+
+	protected static String toJava(final String name) {
+		final String identifier = toJavaIdentifier(name);
+		return SourceVersion.isKeyword(identifier) ? '_' + identifier : identifier;
+	}
+
+	private static String toJavaIdentifier(final String name) {
+		final StringBuilder sb = new StringBuilder(toFirstJavaCharacter(name.charAt(0)));
+		for (int i = 1; i < name.length(); i++) {
+			sb.append(toJavaCharacter(name.charAt(i)));
+		}
+		return sb.toString();
+	}
+
+	private static char toJavaCharacter(final char nameCharacter) {
+		return Character.isJavaIdentifierPart(nameCharacter) ? nameCharacter : '_';
+	}
+
+	private static String toFirstJavaCharacter(final char firstNameCharacter) {
+		return Character.isJavaIdentifierStart(firstNameCharacter) ? String.valueOf(firstNameCharacter) : "_" + toJavaCharacter(firstNameCharacter);
 	}
 
 }
