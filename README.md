@@ -9,6 +9,7 @@ This is a Java annotation processor to generate Domino UI MdiIcons (https://domi
 * Provide single collection with all icons 
 * Allows to select icon(s) by tag or alias
 * Provide complete list of tags for current icon set.
+* Generate simple interface with out any metainformation as it is in original Domino-UI (from 1.1)
 
 ### How to Use ###
 
@@ -44,10 +45,20 @@ to use `MdIcon` annotation in code of your application add into pom.xml `<depend
 Put meta.json (https://github.com/Templarian/MaterialDesign-SVG) to the root of project sources. For current Domino UI it is https://github.com/Templarian/MaterialDesign-SVG/blob/v3.0.39/meta.json. Download it and put into `src\main\resources`
 #### Add annotation MdIcon to a package
 MdIcon is a package annotation to add it create or update `package-info.java` in the selected package. 
+To generate full client side metadata. 
 ```java
-@org.jresearch.commons.gwt.mdIcon.MdIcon
-package org.jresearch.gavka.gwt.core.client.module.connection.editor;
+	@org.jresearch.commons.gwt.mdIcon.MdIcon
+	package org.jresearch.gavka.gwt.core.client.module.connection.editor;
 ```
+Pay attention, the generated icons information and icon instances is VERY big. Use it with care! For example in separate applications or split you application.
+
+To generate simple interface with creation methods:
+```java
+	@org.jresearch.commons.gwt.mdIcon.MdIcon(org.jresearch.commons.gwt.mdIcon.Mode.ORIG)
+	package org.jresearch.gavka.gwt.core.client.module.connection.editor;
+```
+This method is relative cheap for preformance - the GWT compiler will remove unused entries.
+
 #### Build it
 
 The `MdIcons` interface will be created in the annotated package. The interface contains all icons from provided `meta.json` separated by alfabet (due to Java limitation on class initialization size)
